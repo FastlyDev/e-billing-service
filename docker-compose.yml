@@ -1,0 +1,10 @@
+services:
+  srisignxml:
+    image: srisignxml
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8000:8000

@@ -181,6 +181,7 @@ class Invoice(BaseModel):
     details: List[Detail]
     additionalInfo: List[AdditionalInfo]
     totalsWithTax: List[TotalWithTax]
+    signatureBase64: str
 
     # def __init__(self,
     #              documentInfo: DocumentInfo,

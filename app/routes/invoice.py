@@ -1,3 +1,4 @@
+import base64
 import os
 import random
 import asyncio
@@ -39,15 +40,18 @@ async def sign_invoice(invoice: Invoice):
         xmlSigned = createTempXmlFile(xmlString, xmlFileName)
 
         # get digital signature
+        # certificateName = 'signature.p12'
+        # pathSignature = os.path.abspath('app/signature.p12')
+        # with open(pathSignature, 'rb') as file:
+        #     digitalSignature = file.read()
+        #     certificateToSign = createTempFile(
+        #         digitalSignature, certificateName)
         certificateName = 'signature.p12'
-        pathSignature = os.path.abspath('app/signature.p12')
-        with open(pathSignature, 'rb') as file:
-            digitalSignature = file.read()
-            certificateToSign = createTempFile(
-                digitalSignature, certificateName)
+        decodedSignature = base64.b64decode(invoice.signatureBase64)
+        certificateToSign = createTempFile(decodedSignature, certificateName)
 
         # password of signature
-        passwordP12 = config['PASSWORD']
+        passwordP12 = os.getenv('PASSWORD')
         infoToSignXml = InfoToSignXml(
             pathXmlToSign=xmlNoSigned.name,
             pathXmlSigned=xmlSigned.name,
@@ -58,8 +62,8 @@ async def sign_invoice(invoice: Invoice):
         isXmlCreated = sign_xml_file(infoToSignXml)
 
         # url for reception and authorization
-        urlReception = config["URL_RECEPTION"]
-        urlAuthorization = config["URL_AUTHORIZATION"]
+        urlReception = os.getenv("URL_RECEPTION")
+        urlAuthorization = os.getenv("URL_AUTHORIZATION")
 
         # send xml for reception
         isReceived = False
